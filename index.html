@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEMLOGIN — Team Structure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g900:#04342C;--g800:#085041;--g700:#0F6E56;--g600:#1D9E75;--g400:#5DCAA5;--g200:#9FE1CB;--g100:#E1F5EE;
+  --a600:#BA7517;--a400:#EF9F27;--a100:#FAEEDA;
+  --p600:#534AB7;--p100:#EEEDFE;
+  --text:#1a1a18;--muted:#5F5E5A;--subtle:#9B9A96;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
+  --white:#ffffff;--bg:#F2F0EB;--surface:#ffffff;
+  --r8:8px;--r12:12px;--r16:16px;
+}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65;min-height:100vh}
+
+/* ── TOP BAR ── */
+.topbar{
+  background:var(--g900);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:60px;position:sticky;top:0;z-index:100;
+}
+.topbar-logo{display:flex;align-items:center;gap:12px}
+.logo-gem{
+  width:32px;height:32px;background:var(--g600);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;color:#fff;letter-spacing:0.5px;
+}
+.topbar-title{font-size:16px;font-weight:600;letter-spacing:0.3px}
+.topbar-sub{font-size:11px;opacity:0.55;margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#5DCAA5;flex-shrink:0}
+.sync-dot.off{background:#F0997B;animation:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.sync-dot.on{animation:blink 2.5s infinite}
+.sync-label{font-size:12px;opacity:.75}
+.btn-db{
+  font-size:12px;padding:5px 12px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.25);background:transparent;
+  color:#fff;cursor:pointer;transition:background .15s;
+}
+.btn-db:hover{background:rgba(255,255,255,.12)}
+
+/* ── TABS ── */
+.tabs{
+  background:var(--white);border-bottom:0.5px solid var(--border2);
+  display:flex;padding:0 28px;overflow-x:auto;gap:2px;
+}
+.tab{
+  padding:13px 18px;font-size:14px;font-weight:500;color:var(--muted);
+  border:none;background:none;cursor:pointer;white-space:nowrap;
+  border-bottom:2.5px solid transparent;transition:color .15s,border-color .15s;
+  display:flex;align-items:center;gap:7px;
+}
+.tab.active{color:var(--g700);border-bottom-color:var(--g600)}
+.tab:hover:not(.active){color:var(--text)}
+.tab-icon{font-size:15px}
+
+/* ── CONTENT WRAP ── */
+.wrap{max-width:1060px;margin:0 auto;padding:28px 28px 60px}
+
+/* ── NOTICE ── */
+.notice{
+  background:var(--a100);border:0.5px solid var(--a400);
+  border-radius:var(--r12);padding:13px 18px;
+  font-size:13.5px;color:#633806;margin-bottom:24px;
+  display:flex;align-items:center;gap:10px;
+}
+.notice b{font-weight:600}
+
+/* ── SECTION LABEL ── */
+.sec{
+  font-size:12px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.sec::after{content:'';flex:1;height:0.5px;background:var(--border2)}
+
+/* ── RATIO GRID ── */
+.ratio-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+  gap:12px;margin-bottom:32px;
+}
+.rc{
+  background:var(--white);border:0.5px solid var(--border2);
+  border-radius:var(--r12);padding:16px;
+}
+.rc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.av{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;flex-shrink:0;
+}
+.rc-name{font-weight:600;font-size:15px}
+.rc-pos{font-size:11px;color:var(--muted);line-height:1.3;margin-top:1px}
+.bar-wrap{background:#EDEDE8;border-radius:6px;height:6px;margin-bottom:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;background:var(--g600)}
+.bar-nums{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.bar-nums span b{color:var(--text);font-weight:600}
+
+/* ── OVERVIEW TABLE ── */
+.tbl-wrap{background:var(--white);border:0.5px solid var(--border2);border-radius:var(--r16);overflow:hidden;margin-bottom:32px}
+.tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.tbl th{
+  background:var(--g900);color:rgba(255,255,255,.85);
+  padding:11px 16px;text-align:left;font-size:12.5px;font-weight:500;letter-spacing:0.3px;
+}
+.tbl td{padding:11px 16px;border-bottom:0.5px solid var(--border);font-size:14px;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#FAFAF6}
+.tbl td:first-child{font-weight:600;white-space:nowrap}
+.kpi-chip{
+  display:inline-block;margin-top:5px;
+  font-size:11px;padding:3px 9px;border-radius:20px;
+  background:var(--g100);color:var(--g700);font-weight:500;
+}
+
+/* ── PERSON CARDS ── */
+.person-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px}
+@media(max-width:640px){.person-grid{grid-template-columns:1fr}}
+.pc{background:var(--white);border:0.5px solid var(--border2);border-radius:var(--r16);overflow:hidden}
+.pc-head{
+  padding:14px 16px;display:flex;align-items:center;gap:11px;
+  border-bottom:0.5px solid var(--border);
+}
+.pc-name{font-weight:600;font-size:15px}
+.pc-role{font-size:12px;color:var(--muted);margin-top:1px}
+.pc-body{padding:14px 16px}
+.duty-list{list-style:none}
+.duty-list li{
+  padding:5px 0;border-bottom:0.5px solid var(--border);
+  font-size:13.5px;display:flex;align-items:flex-start;gap:8px;
+}
+.duty-list li:last-child{border-bottom:none}
+.duty-list li::before{content:'›';color:var(--g600);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ── SCHEDULE ── */
+.sched-grid{display:flex;flex-direction:column;gap:22px}
+.sched-person{}
+.sched-head{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.sched-name{font-weight:600;font-size:15px}
+.sched-role{font-size:12.5px;color:var(--muted)}
+.timeline{
+  background:var(--white);border:0.5px solid var(--border2);
+  border-radius:var(--r12);overflow:hidden;
+}
+.tl-row{display:grid;grid-template-columns:98px 1fr}
+.tl-time{
+  padding:9px 14px;font-size:12px;color:var(--muted);
+  border-bottom:0.5px solid var(--border);border-right:0.5px solid var(--border);
+  background:#FAFAF6;display:flex;align-items:center;white-space:nowrap;
+}
+.tl-cell{
+  padding:9px 14px;font-size:13.5px;border-bottom:0.5px solid var(--border);
+  display:flex;align-items:center;gap:9px;
+}
+.tl-row:last-child .tl-time,.tl-row:last-child .tl-cell{border-bottom:none}
+.chip{
+  font-size:11px;padding:2px 9px;border-radius:20px;flex-shrink:0;font-weight:500;
+}
+.chip-green{background:var(--g100);color:var(--g700)}
+.chip-gold{background:var(--a100);color:var(--a600)}
+.chip-blue{background:#E6F1FB;color:#185FA5}
+.chip-purple{background:var(--p100);color:var(--p600)}
+.chip-gray{background:#EDEDE8;color:var(--muted)}
+.chip-pink{background:#FBEAF0;color:#993556}
+.tl-lunch .tl-time,.tl-lunch .tl-cell{background:#FAFAF6;color:var(--subtle);font-style:italic}
+
+/* ── OWNER TABLE ── */
+.own-wrap{background:var(--white);border:0.5px solid var(--border2);border-radius:var(--r16);overflow:hidden}
+.own-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--border)}
+.own-th{
+  padding:10px 18px;background:var(--g900);
+  font-size:12px;font-weight:500;color:rgba(255,255,255,.8);
+  letter-spacing:0.3px;
+}
+.own-th:first-child{border-right:0.5px solid rgba(255,255,255,.1)}
+.own-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--border)}
+.own-row:last-child{border-bottom:none}
+.own-row:hover>div{background:#FAFAF6}
+.own-cell{padding:10px 18px;font-size:14px;display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.own-cell:first-child{border-right:0.5px solid var(--border);font-weight:500}
+.pill{
+  font-size:11.5px;padding:3px 10px;border-radius:20px;
+  background:var(--p100);color:var(--p600);font-weight:500;
+}
+
+/* ── EDITABLE ── */
+[contenteditable=true]{outline:none;border-radius:4px;cursor:text}
+[contenteditable=true]:hover{background:rgba(29,158,117,.06)}
+[contenteditable=true]:focus{background:#FFFBF0;box-shadow:0 0 0 2px var(--a400)}
+
+/* ── AVATAR COLORS ── */
+.av-g{background:var(--g100);color:var(--g700)}
+.av-b{background:#E6F1FB;color:#185FA5}
+.av-p{background:var(--p100);color:var(--p600)}
+.av-a{background:var(--a100);color:var(--a600)}
+.av-pk{background:#FBEAF0;color:#993556}
+.av-t{background:#E1F5EE;color:#0F6E56}
+
+/* ── FIREBASE MODAL ── */
+.modal-mask{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:500;display:flex;align-items:center;justify-content:center;
+}
+.modal{
+  background:var(--white);border-radius:var(--r16);padding:28px 30px;
+  width:460px;max-width:94vw;
+}
+.modal h2{font-size:17px;font-weight:600;margin-bottom:6px}
+.modal p{font-size:13.5px;color:var(--muted);margin-bottom:18px;line-height:1.6}
+.modal input{
+  width:100%;border:0.5px solid var(--border2);border-radius:var(--r8);
+  padding:10px 13px;font-size:14px;font-family:inherit;
+  margin-bottom:10px;outline:none;transition:border .15s;
+}
+.modal input:focus{border-color:var(--g600)}
+.modal .row{display:flex;gap:10px;margin-top:4px}
+.mbtn{
+  flex:1;padding:10px 0;border-radius:var(--r8);font-size:14px;
+  font-family:inherit;cursor:pointer;font-weight:500;transition:.15s;
+}
+.mbtn-pri{background:var(--g700);color:#fff;border:none}
+.mbtn-pri:hover{background:var(--g800)}
+.mbtn-sec{background:none;border:0.5px solid var(--border2);color:var(--text)}
+.mbtn-sec:hover{background:var(--bg)}
+.steps{
+  background:var(--bg);border-radius:var(--r8);padding:13px 15px;
+  margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.8;
+}
+.steps b{color:var(--text);font-weight:600}
+.steps ol{padding-left:16px}
+.steps a{color:var(--g700)}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--g800);color:#fff;
+  padding:10px 18px;border-radius:var(--r8);
+  font-size:13px;opacity:0;transform:translateY(6px);
+  transition:opacity .2s,transform .2s;pointer-events:none;z-index:999;
+}
+.toast.on{opacity:1;transform:translateY(0)}
+
+/* ── UTIL ── */
+.hidden{display:none!important}
+.panel{display:none}.panel.on{display:block}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-gem">GEM</div>
+    <div>
+      <div class="topbar-title">GEMLOGIN Team</div>
+      <div class="topbar-sub">โครงสร้างทีมและหน้าที่รับผิดชอบ</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div style="display:flex;align-items:center;gap:6px">
+      <div class="sync-dot off" id="syncDot"></div>
+      <span class="sync-label" id="syncLabel">ไม่ได้เชื่อมต่อ</span>
+    </div>
+    <button class="btn-db" onclick="openModal()">🔗 Firebase</button>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="tabs">
+  <button class="tab active" onclick="go('overview',this)">
+    <span class="tab-icon">👥</span> ภาพรวมทีม
+  </button>
+  <button class="tab" onclick="go('duties',this)">
+    <span class="tab-icon">📋</span> หน้าที่รายคน
+  </button>
+  <button class="tab" onclick="go('schedule',this)">
+    <span class="tab-icon">🕘</span> ตารางเวลา
+  </button>
+  <button class="tab" onclick="go('owners',this)">
+    <span class="tab-icon">🏷️</span> เจ้าของงาน
+  </button>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ บันทึกแล้ว</div>
+
+<!-- FIREBASE MODAL -->
+<div class="modal-mask hidden" id="modalMask">
+  <div class="modal">
+    <h2>🔗 เชื่อมต่อ Firebase Realtime DB</h2>
+    <p>วาง Database URL เพื่อให้ทุกคนในทีมแก้ไขและเห็นการเปลี่ยนแปลงพร้อมกัน</p>
+    <input type="text" id="fbUrl" placeholder="https://your-project-default-rtdb.firebaseio.com">
+    <div class="row">
+      <button class="mbtn mbtn-sec" onclick="closeModal()">ข้ามก่อน</button>
+      <button class="mbtn mbtn-pri" onclick="doConnect()">เชื่อมต่อ</button>
+    </div>
+    <div class="steps">
+      <b>สร้าง Firebase ฟรี (2 นาที):</b>
+      <ol>
+        <li>ไปที่ <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a></li>
+        <li>สร้าง Project → เปิด <b>Realtime Database</b> → Start in <b>test mode</b></li>
+        <li>คัดลอก URL <code>https://xxx-rtdb.firebaseio.com</code> มาวางด้านบน</li>
+        <li>แชร์ไฟล์ HTML ให้ทีม ทุกคนวาง URL เดิม → sync อัตโนมัติ</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ CONTENT ══════════════════════════════ -->
+<div class="wrap">
+
+  <!-- ▌ OVERVIEW -->
+  <div class="panel on" id="p-overview">
+
+    <div class="notice">
+      <span>✏️</span>
+      <span><b>แก้ไขได้เลย:</b> คลิกที่ข้อความใดก็ได้ — เชื่อมต่อ Firebase แล้วจะ sync ทันทีให้ทุกคน</span>
+    </div>
+
+    <div class="sec">สัดส่วนการทำงาน</div>
+    <div class="ratio-grid" id="ratioGrid"></div>
+
+    <div class="sec">ภาพรวมหน้าที่และ KPI</div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th style="width:88px">คน</th>
+          <th style="width:185px">ตำแหน่ง</th>
+          <th>หน้าที่หลัก</th>
+          <th style="width:225px">KPI</th>
+        </tr></thead>
+        <tbody id="ovTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ▌ DUTIES -->
+  <div class="panel" id="p-duties">
+    <div class="sec">หน้าที่รายละเอียด</div>
+    <div class="person-grid" id="personGrid"></div>
+  </div>
+
+  <!-- ▌ SCHEDULE -->
+  <div class="panel" id="p-schedule">
+    <div class="sec">แนะนำการจัดเวลา 1 วัน (09:00 – 18:00)</div>
+    <div class="notice" style="background:var(--g100);border-color:var(--g400);color:var(--g800)">
+      <span>💡</span>
+      <span><b>นี่เป็นเพียงการจัดเวลาที่แนะนำเท่านั้น</b> — ทุกคนควรคิดและจัดสรรเวลาของตนเองใน 1 วันให้ดีที่สุดตามสถานการณ์จริง</span>
+    </div>
+    <div class="notice">
+      <span>📌</span>
+      <span><b>เจษ และ ไปป์</b> ยังไม่มีโปรเจคมอบหมายในปัจจุบัน — เวลาว่างให้สนับสนุนงานทีม, ศึกษาเครื่องมือใหม่, หรือรอรับมอบหมายจากโอเว่น</span>
+    </div>
+    <div class="sched-grid" id="schedGrid"></div>
+  </div>
+
+  <!-- ▌ OWNERS -->
+  <div class="panel" id="p-owners">
+    <div class="sec">เจ้าของงาน (Owner)</div>
+    <div class="own-wrap">
+      <div class="own-grid">
+        <div class="own-th">งาน</div>
+        <div class="own-th">Owner</div>
+      </div>
+      <div id="ownRows"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ══════════════════════ DATA ══════════════════════ */
+const D = {
+  members:[
+    {id:"owen",  av:"OW", cls:"av-g", name:"โอเว่น",  pos:"Team Lead",
+     main:80, other:20,
+     brief:"บริหารทีม วางแผนงาน ควบคุมคุณภาพงาน ติดตามงานค้าง ประชุมทีม",
+     kpi:"งานค้างเกิน 3 วันต้องมีการติดตาม 100%",
+     duties:["วางแผนงานและจัดลำดับความสำคัญ","ควบคุมงานให้ดำเนินต่อได้แม้มีพนักงานลา","ติดตามงานค้างและรายงานงานค้างเกิน 3 วัน","ประชุมทีมทุก 2 สัปดาห์","กำหนดหัวข้อประชุมร่วมกับใบตอง","สรุปรายงานประชุมลงกลุ่ม","รับ KPI จากใบตอง","รับ KPI ที่คาดหวังจากทีมการตลาดผ่านอู๋","กำหนดเป้าหมายและแนวทางการทำงาน","กำหนดแผนฟาร์มบัญชี","มอบหมายและติดตามโปรเจคพิเศษ"]},
+    {id:"pipe",  av:"PP", cls:"av-b", name:"ไปป์",    pos:"Customer Success & Sales Admin",
+     main:80, other:20,
+     brief:"ดูแลลูกค้า รับ Requirement สรุปยอดขาย สรุปยอดเติมเงิน",
+     kpi:"สรุปยอดถูกต้อง 100%",
+     duties:["ตอบลูกค้า","รับ Requirement ลูกค้า","วิเคราะห์ปัญหาเบื้องต้น","หากแก้ไขได้ ให้ดำเนินการและรายงานโอเว่น","หากแก้ไขไม่ได้ ให้รวบรวมส่งโอเว่น","ติดตามสถานะงานที่เปิดไว้","อัปเดตสถานะลูกค้า","สรุปยอดขายประจำวัน","สรุปยอดเติมเงินประจำวัน","ส่งยอดให้ใบตองตรวจสอบทุกวัน","รวบรวมข้อเสนอแนะจากลูกค้าเข้าที่ประชุม","ฟาร์มบัญชีตามที่โอเว่นมอบหมาย","ดูแลโปรเจคที่ได้รับมอบหมาย"]},
+    {id:"jet",   av:"JT", cls:"av-p", name:"เจษ",     pos:"Automation Engineer & Product Coordinator",
+     main:70, other:30,
+     brief:"พัฒนา Script ดูแล Website หน้าร้าน และประสานงานการตลาด",
+     kpi:"Script ใหม่ขั้นต่ำ 1 Script / 2 วัน",
+     duties:["ค้นคว้าไอเดียใหม่สำหรับพัฒนา Script","สร้าง Script ใหม่อย่างน้อย 1 Script ต่อ 2 วัน","ส่ง Script ให้ใบตองตรวจสอบ","ตรวจสอบระบบและ Script รายวัน","ปรับปรุงและแก้ไข Script","ตรวจสอบและอัปเดตคู่มือการใช้งาน","ค้นหาข้อมูลใหม่สำหรับ Blog และบทความ","ส่งข้อมูลให้ใบตองเพื่อนำไปเผยแพร่","อัปเดต Website และหน้าร้าน Gemlogin ทุกช่องทาง","วางแผนร่วมกับทีมการตลาด","ตรวจสอบสื่อจากทีมการตลาดก่อนอัปเดต","ประสานงานร่วมกับทีมการตลาด","เสนอไอเดียวิดีโอให้ทีมการตลาด","คลิปสั้นอย่างน้อย 1 ไอเดีย / 3 วัน","คลิปยาวอย่างน้อย 1 ไอเดีย / 6 วัน","ตอบลูกค้าแทนไปป์เมื่อไปป์ลา","แจ้งข้อเสนอแนะในการประชุมทีม","ฟาร์มบัญชีตามที่โอเว่นมอบหมาย","ดูแลโปรเจคที่ได้รับมอบหมาย"]},
+    {id:"boss",  av:"BS", cls:"av-a", name:"บอส",     pos:"Script Improvement Specialist",
+     main:40, other:60,
+     brief:"ปรับปรุง Script ดูแล Bug และตรวจสอบคุณภาพ Script",
+     kpi:"ปรับปรุง Script อย่างน้อย 1 Script / 2 วัน",
+     duties:["ตรวจสอบ Bug และปัญหาของ Script","ทดสอบการแก้ไขก่อนส่งใบตองตรวจสอบ","ปรับปรุง Script ที่ล้าสมัย","เสนอ Script ที่ควรปรับปรุงให้โอเว่น","ตรวจสอบความสมบูรณ์ของ Script ที่เปิดใช้งาน","เสนอแนวทางพัฒนา Script","แจ้งข้อเสนอแนะในการประชุมทีม","ฟาร์มบัญชีตามที่โอเว่นมอบหมาย","ดูแลโปรเจคที่ได้รับมอบหมาย"]},
+    {id:"u",     av:"UU", cls:"av-pk",name:"อู๋",      pos:"Marketing Coordinator",
+     main:30, other:70,
+     brief:"ประสานงานทีมการตลาด แจ้ง KPI และแผนการตลาด",
+     kpi:"KPI การตลาดถูกส่งต่อครบ 100%",
+     duties:["ประสานงานกับทีมการตลาด","แจ้ง KPI ที่ทีมการตลาดกำหนดให้ทีมรับทราบ","แจ้ง KPI ที่คาดหวังต่อโอเว่น","กำหนดทิศทางสื่อร่วมกับทีมการตลาด","เสนอหัวข้อคอนเทนต์และแคมเปญ","ฟาร์มบัญชีตามที่โอเว่นมอบหมาย","ดูแลโปรเจคที่ได้รับมอบหมาย"]},
+    {id:"baitong",av:"BT",cls:"av-t", name:"ใบตอง",   pos:"Operations & Reporting Manager",
+     main:30, other:70,
+     brief:"ตรวจสอบข้อมูล รายงาน KPI Dashboard Broadcast",
+     kpi:"Dashboard และรายงานอัปเดตทุกวัน",
+     duties:["ตรวจสอบยอดขายจากไปป์ทุกวัน","ตรวจสอบยอดเติมเงินจากไปป์ทุกวัน","ตรวจสอบ Script ใหม่จากเจษ","รีเช็คก่อนเสนอโอเว่นอนุมัติ","จัดทำ Dashboard รายวัน","จัดทำรายงานประจำวัน","จัดทำ KPI รายบุคคลร่วมกับโอเว่น","ร่วมกำหนดหัวข้อประชุม","สรุปข้อมูลเพื่อใช้ประชุม","รีเช็คงานทุกส่วนก่อนรายงานโอเว่น","ตรวจสอบสื่อจากอู๋ก่อนเผยแพร่","ดูแล Broadcast LINE OA","จัดทำแผน Broadcast LINE OA","รับข้อมูลอัปเดตจากไปป์และเจษ","ฟาร์มบัญชีตามที่โอเว่นมอบหมาย","ดูแลโปรเจคที่ได้รับมอบหมาย"]}
+  ],
+
+  owners:[
+    {task:"บริหารทีม",owners:["โอเว่น"]},
+    {task:"ประชุมทีม",owners:["โอเว่น","ใบตอง"]},
+    {task:"KPI ทีม",owners:["โอเว่น","ใบตอง"]},
+    {task:"ลูกค้า",owners:["ไปป์"]},
+    {task:"Requirement",owners:["ไปป์"]},
+    {task:"สรุปยอดขาย",owners:["ไปป์"]},
+    {task:"สรุปยอดเติมเงิน",owners:["ไปป์"]},
+    {task:"พัฒนา Script",owners:["เจษ"]},
+    {task:"Website / หน้าร้าน",owners:["เจษ"]},
+    {task:"Blog / บทความ",owners:["เจษ"]},
+    {task:"ปรับปรุง Script",owners:["บอส"]},
+    {task:"Bug Tracking",owners:["บอส"]},
+    {task:"Marketing KPI",owners:["อู๋"]},
+    {task:"Dashboard",owners:["ใบตอง"]},
+    {task:"Broadcast LINE OA",owners:["ใบตอง"]},
+    {task:"ตรวจสอบข้อมูลก่อนเผยแพร่",owners:["ใบตอง"]}
+  ],
+
+  schedules:{
+    owen:[
+      {t:"09:00–09:30",chip:"chip-green",label:"เช็คงาน",    task:"เช็คงานค้างทีม ดูสถานะงานที่ค้างเกิน 1 วัน"},
+      {t:"09:30–11:00",chip:"chip-green",label:"วางแผน",    task:"ทบทวนแผนงาน มอบหมายงานวันนั้น แจ้งโปรเจคพิเศษ"},
+      {t:"11:00–12:00",chip:"chip-blue", label:"ติดตาม",    task:"ติดตามงานที่ค้างอยู่ รับรายงานจากแต่ละคน"},
+      {t:"12:00–13:00",chip:"chip-gray", label:"พัก",        task:"พักเที่ยง",lunch:true},
+      {t:"13:00–16:00",chip:"chip-pink", label:"ลูกค้าคนสำคัญ", task:"ช่วงเวลาสำหรับลูกค้าคนสำคัญ — ติดตาม ประชุม ตรวจสอบ KPI รายบุคคลจากใบตอง"},
+      {t:"16:00–17:30",chip:"chip-green",label:"วางแผน",    task:"กำหนดเป้าหมายวันถัดไป ตรวจสอบแผนฟาร์มบัญชี มอบหมายโปรเจคพิเศษ"},
+      {t:"17:30–18:00",chip:"chip-gold", label:"สรุป",      task:"สรุปงานประจำวัน รับรายงานสรุปจากใบตอง"}
+    ],
+    pipe:[
+      {t:"09:00–09:30",chip:"chip-green",label:"เช็ค inbox", task:"เช็ค inbox ลูกค้าทุกช่องทาง จัดลำดับความสำคัญ"},
+      {t:"09:30–12:00",chip:"chip-blue", label:"ดูแลลูกค้า", task:"ตอบลูกค้า รับ Requirement วิเคราะห์ปัญหาเบื้องต้น อัพเดทสถานะ"},
+      {t:"12:00–13:00",chip:"chip-gray", label:"พัก",        task:"พักเที่ยง",lunch:true},
+      {t:"13:00–15:30",chip:"chip-blue", label:"ดูแลลูกค้า", task:"ตอบลูกค้าต่อเนื่อง ติดตามสถานะงานที่เปิดไว้ รวบรวมข้อเสนอแนะ"},
+      {t:"15:30–16:30",chip:"chip-gold", label:"สรุปยอด",   task:"สรุปยอดขายประจำวัน สรุปยอดเติมเงิน"},
+      {t:"16:30–17:30",chip:"chip-purple",label:"ส่งงาน",   task:"ส่งยอดให้ใบตองตรวจสอบ — เวลาว่าง: ฟาร์มบัญชี / ศึกษาเครื่องมือใหม่"},
+      {t:"17:30–18:00",chip:"chip-green",label:"สรุป",       task:"สรุปงาน เตรียมพร้อมวันถัดไป"}
+    ],
+    jet:[
+      {t:"09:00–09:30",chip:"chip-green",label:"เช็คระบบ",  task:"ตรวจสอบระบบ Script และ Website หน้าร้าน — มีปัญหาไหม?"},
+      {t:"09:30–12:00",chip:"chip-purple",label:"Script",   task:"พัฒนา Script ใหม่ (เป้า 1 Script / 2 วัน) / ค้นคว้าไอเดียใหม่"},
+      {t:"12:00–13:00",chip:"chip-gray", label:"พัก",       task:"พักเที่ยง",lunch:true},
+      {t:"13:00–14:30",chip:"chip-green",label:"Website",   task:"อัพเดท Website และหน้าร้าน ตรวจสอบคู่มือการใช้งาน"},
+      {t:"14:30–16:00",chip:"chip-gold", label:"คอนเทนต์", task:"ค้นหาข้อมูล Blog/บทความ เสนอไอเดียคอนเทนต์/วิดีโอให้ทีมการตลาด"},
+      {t:"16:00–17:00",chip:"chip-blue", label:"ประสานงาน",task:"ประสานงานทีมการตลาด ตรวจสอบสื่อก่อนอัพเดท ส่งข้อมูลให้ใบตอง"},
+      {t:"17:00–17:30",chip:"chip-purple",label:"ส่ง Script",task:"ส่ง Script ที่พัฒนาเสร็จให้ใบตองตรวจสอบ"},
+      {t:"17:30–18:00",chip:"chip-green",label:"สรุป",      task:"สรุปงาน วางแผน Script วันถัดไป — ไม่มีโปรเจค: ศึกษาเครื่องมือ AI ใหม่"}
+    ],
+    boss:[
+      {t:"09:00–09:30",chip:"chip-green",label:"เช็ค Bug",  task:"เช็ค Bug report จากลูกค้าหรือทีม จัดลำดับความสำคัญ"},
+      {t:"09:30–12:00",chip:"chip-purple",label:"แก้ Script",task:"แก้ไข Bug และปรับปรุง Script ที่ล้าสมัย (เป้า 1 Script / 2 วัน)"},
+      {t:"12:00–13:00",chip:"chip-gray", label:"พัก",       task:"พักเที่ยง",lunch:true},
+      {t:"13:00–15:30",chip:"chip-purple",label:"แก้ Script",task:"ปรับปรุง Script ต่อเนื่อง ตรวจสอบความสมบูรณ์ของ Script ที่ใช้งานอยู่"},
+      {t:"15:30–16:30",chip:"chip-gold", label:"ทดสอบ",    task:"ทดสอบ Script ที่แก้ไขก่อนส่งใบตอง เสนอแนวทางพัฒนาให้โอเว่น"},
+      {t:"16:30–17:30",chip:"chip-blue", label:"โปรเจค",   task:"ดูแลโปรเจคที่ได้รับมอบหมาย / ฟาร์มบัญชีตามโอเว่นมอบหมาย"},
+      {t:"17:30–18:00",chip:"chip-green",label:"สรุป",      task:"สรุปงาน รายงานสิ่งที่พบวันนี้"}
+    ],
+    u:[
+      {t:"09:00–09:30",chip:"chip-green",label:"เช็ค KPI",  task:"เช็ค KPI และแผนการตลาดจากทีมการตลาด"},
+      {t:"09:30–11:30",chip:"chip-pink", label:"ประสานงาน",task:"ประสานงานทีมการตลาด กำหนดทิศทางสื่อ เสนอหัวข้อคอนเทนต์/แคมเปญ"},
+      {t:"11:30–12:00",chip:"chip-gold", label:"รายงาน KPI",task:"สรุป KPI ที่ได้รับและส่งต่อให้โอเว่น"},
+      {t:"12:00–13:00",chip:"chip-gray", label:"พัก",       task:"พักเที่ยง",lunch:true},
+      {t:"13:00–15:00",chip:"chip-blue", label:"โปรเจค",   task:"ดูแลโปรเจคที่ได้รับมอบหมาย / ฟาร์มบัญชีตามโอเว่นมอบหมาย"},
+      {t:"15:00–17:30",chip:"chip-pink", label:"การตลาด", task:"ช่วงเวลาของการตลาด — ประสานงาน ติดตามผล KPI กำหนดทิศทางสื่อ"},
+      {t:"17:30–18:00",chip:"chip-green",label:"สรุป",     task:"สรุปงาน วางแผนประสานงานวันถัดไป"}
+    ],
+    baitong:[
+      {t:"09:00–09:30",chip:"chip-green",label:"รับข้อมูล", task:"รับข้อมูลอัพเดตจากไปป์และเจษ ตรวจสอบยอดขาย/ยอดเติมเงิน"},
+      {t:"09:30–11:00",chip:"chip-blue", label:"Dashboard", task:"จัดทำ Dashboard รายวัน อัพเดตตัวเลข KPI"},
+      {t:"11:00–12:00",chip:"chip-gold", label:"ตรวจ Script",task:"ตรวจสอบ Script ใหม่จากเจษ รีเช็คก่อนเสนอโอเว่น"},
+      {t:"12:00–13:00",chip:"chip-gray", label:"พัก",       task:"พักเที่ยง",lunch:true},
+      {t:"13:00–15:00",chip:"chip-blue", label:"รายงาน",   task:"จัดทำรายงานประจำวัน สรุปข้อมูลเพื่อใช้ประชุม จัดทำ KPI รายบุคคล"},
+      {t:"15:00–17:40",chip:"chip-purple",label:"การตลาด", task:"ช่วงเวลาของการตลาด — ตรวจสอบสื่อ จัดทำ/วางแผน Broadcast LINE OA ประสานงานกับอู๋"},
+      {t:"17:40–18:00",chip:"chip-green",label:"รายงาน",   task:"รายงานสรุปประจำวันให้โอเว่น"}
+    ]
+  }
+};
+
+/* ══════════════════════ FIREBASE ══════════════════════ */
+let db=null,ref=null,saveTimer=null,connected=false;
+
+function openModal(){
+  document.getElementById('modalMask').classList.remove('hidden');
+  const saved=localStorage.getItem('gem-fb-url');
+  if(saved) document.getElementById('fbUrl').value=saved;
+}
+function closeModal(){document.getElementById('modalMask').classList.add('hidden')}
+function doConnect(){
+  const url=document.getElementById('fbUrl').value.trim();
+  if(!url){alert('กรุณาใส่ Firebase URL');return}
+  localStorage.setItem('gem-fb-url',url);
+  closeModal();
+  bootFirebase(url);
+}
+function bootFirebase(url){
+  try{
+    const apps=firebase.apps;
+    const app=apps.length?firebase.app():firebase.initializeApp({databaseURL:url});
+    db=firebase.database(app);
+    ref=db.ref('gemlogin-v1');
+    ref.on('value',snap=>{
+      const v=snap.val();
+      if(v){merge(v)}
+      renderAll();
+      setSync(true);
+    },()=>setSync(false));
+  }catch(e){alert('เชื่อมต่อไม่ได้: '+e.message)}
+}
+function merge(v){
+  if(v.members) D.members.forEach((m,i)=>{if(v.members[m.id]) Object.assign(m,v.members[m.id])});
+  if(v.owners) D.owners=v.owners;
+  if(v.schedules) Object.keys(v.schedules).forEach(k=>{if(D.schedules[k]) D.schedules[k]=v.schedules[k]});
+}
+function save(){
+  if(!ref) return;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    const payload={members:{},owners:D.owners,schedules:D.schedules};
+    D.members.forEach(m=>payload.members[m.id]={name:m.name,pos:m.pos,main:m.main,other:m.other,brief:m.brief,kpi:m.kpi,duties:m.duties});
+    ref.set(payload).then(toast);
+  },700);
+}
+function setSync(on){
+  connected=on;
+  const dot=document.getElementById('syncDot');
+  dot.className='sync-dot '+(on?'on':'off');
+  document.getElementById('syncLabel').textContent=on?'Real-time sync':'ไม่ได้เชื่อมต่อ';
+}
+function toast(){
+  const t=document.getElementById('toast');
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),1500);
+}
+
+/* ══════════════════════ TAB ══════════════════════ */
+const panels={overview:'p-overview',duties:'p-duties',schedule:'p-schedule',owners:'p-owners'};
+function go(id,btn){
+  Object.values(panels).forEach(p=>document.getElementById(p).classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(panels[id]).classList.add('on');
+  btn.classList.add('active');
+}
+
+/* ══════════════════════ RENDER ══════════════════════ */
+function editable(el,cb){
+  el.contentEditable='true';
+  el.addEventListener('blur',()=>{cb(el.innerText.trim());save()});
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();el.blur()}});
+}
+
+function renderAll(){
+  renderRatio();renderOv();renderPerson();renderSched();renderOwners();
+}
+
+/* ratio cards */
+function renderRatio(){
+  const g=document.getElementById('ratioGrid');g.innerHTML='';
+  D.members.forEach(m=>{
+    const d=document.createElement('div');d.className='rc';
+    d.innerHTML=`<div class="rc-top">
+      <div class="av ${m.cls}">${m.av}</div>
+      <div><div class="rc-name" contenteditable="true">${m.name}</div>
+      <div class="rc-pos">${m.pos}</div></div></div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${m.main}%"></div></div>
+      <div class="bar-nums"><span>งานหลัก <b>${m.main}%</b></span><span>อื่น <b>${m.other}%</b></span></div>`;
+    g.appendChild(d);
+    editable(d.querySelector('[contenteditable]'),v=>{m.name=v});
+  });
+}
+
+/* overview table */
+function renderOv(){
+  const tb=document.getElementById('ovTbody');tb.innerHTML='';
+  D.members.forEach(m=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span contenteditable="true">${m.name}</span></td>
+      <td><span contenteditable="true">${m.pos}</span></td>
+      <td><span contenteditable="true">${m.brief}</span></td>
+      <td><span contenteditable="true">${m.kpi}</span><br><span class="kpi-chip">KPI</span></td>`;
+    tb.appendChild(tr);
+    const cells=tr.querySelectorAll('[contenteditable]');
+    const keys=['name','pos','brief','kpi'];
+    cells.forEach((el,i)=>editable(el,v=>{m[keys[i]]=v}));
+  });
+}
+
+/* person cards */
+function renderPerson(){
+  const g=document.getElementById('personGrid');g.innerHTML='';
+  D.members.forEach(m=>{
+    const d=document.createElement('div');d.className='pc';
+    d.innerHTML=`<div class="pc-head">
+      <div class="av ${m.cls}" style="width:38px;height:38px;font-size:13px">${m.av}</div>
+      <div><div class="pc-name">${m.name}</div><div class="pc-role">${m.pos}</div></div>
+    </div>
+    <div class="pc-body"><ul class="duty-list">
+      ${m.duties.map((d,i)=>`<li><span contenteditable="true" data-i="${i}">${d}</span></li>`).join('')}
+    </ul></div>`;
+    g.appendChild(d);
+    d.querySelectorAll('[data-i]').forEach(el=>{
+      const i=+el.getAttribute('data-i');
+      editable(el,v=>{m.duties[i]=v});
+    });
+  });
+}
+
+/* schedule */
+function renderSched(){
+  const g=document.getElementById('schedGrid');g.innerHTML='';
+  D.members.forEach(m=>{
+    const s=D.schedules[m.id];if(!s)return;
+    const wrap=document.createElement('div');wrap.className='sched-person';
+    const rows=s.map((r,i)=>`
+      <div class="tl-row${r.lunch?' tl-lunch':''}">
+        <div class="tl-time">${r.t}</div>
+        <div class="tl-cell">
+          <span class="chip ${r.chip}">${r.label}</span>
+          <span contenteditable="true" data-si="${i}">${r.task}</span>
+        </div>
+      </div>`).join('');
+    wrap.innerHTML=`<div class="sched-head">
+      <div class="av ${m.cls}" style="width:30px;height:30px;font-size:11px">${m.av}</div>
+      <span class="sched-name">${m.name}</span>
+      <span class="sched-role">— ${m.pos}</span>
+    </div>
+    <div class="timeline">${rows}</div>`;
+    g.appendChild(wrap);
+    wrap.querySelectorAll('[data-si]').forEach(el=>{
+      const i=+el.getAttribute('data-si');
+      editable(el,v=>{D.schedules[m.id][i].task=v});
+    });
+  });
+}
+
+/* owners */
+function renderOwners(){
+  const g=document.getElementById('ownRows');g.innerHTML='';
+  D.owners.forEach((row,i)=>{
+    const d=document.createElement('div');d.className='own-row';
+    d.innerHTML=`<div class="own-cell"><span contenteditable="true">${row.task}</span></div>
+      <div class="own-cell">${row.owners.map(o=>`<span class="pill">${o}</span>`).join('')}</div>`;
+    g.appendChild(d);
+    editable(d.querySelector('[contenteditable]'),v=>{D.owners[i].task=v});
+  });
+}
+
+/* ══════════════════════ INIT ══════════════════════ */
+renderAll();
+const savedUrl=localStorage.getItem('gem-fb-url');
+if(savedUrl) bootFirebase(savedUrl);
+</script>
+</body>
+</html>
