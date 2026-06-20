@@ -6,8 +6,6 @@
 <title>GEMLOGIN — Team Structure</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -191,11 +189,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);fon
   background:var(--p100);color:var(--p600);font-weight:500;
 }
 
-/* ── EDITABLE ── */
-[contenteditable=true]{outline:none;border-radius:4px;cursor:text}
-[contenteditable=true]:hover{background:rgba(29,158,117,.06)}
-[contenteditable=true]:focus{background:#FFFBF0;box-shadow:0 0 0 2px var(--a400)}
-
 /* ── AVATAR COLORS ── */
 .av-g{background:var(--g100);color:var(--g700)}
 .av-b{background:#E6F1FB;color:#185FA5}
@@ -204,49 +197,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);fon
 .av-pk{background:#FBEAF0;color:#993556}
 .av-t{background:#E1F5EE;color:#0F6E56}
 
-/* ── FIREBASE MODAL ── */
-.modal-mask{
-  position:fixed;inset:0;background:rgba(0,0,0,.5);
-  z-index:500;display:flex;align-items:center;justify-content:center;
-}
-.modal{
-  background:var(--white);border-radius:var(--r16);padding:28px 30px;
-  width:460px;max-width:94vw;
-}
-.modal h2{font-size:17px;font-weight:600;margin-bottom:6px}
-.modal p{font-size:13.5px;color:var(--muted);margin-bottom:18px;line-height:1.6}
-.modal input{
-  width:100%;border:0.5px solid var(--border2);border-radius:var(--r8);
-  padding:10px 13px;font-size:14px;font-family:inherit;
-  margin-bottom:10px;outline:none;transition:border .15s;
-}
-.modal input:focus{border-color:var(--g600)}
-.modal .row{display:flex;gap:10px;margin-top:4px}
-.mbtn{
-  flex:1;padding:10px 0;border-radius:var(--r8);font-size:14px;
-  font-family:inherit;cursor:pointer;font-weight:500;transition:.15s;
-}
-.mbtn-pri{background:var(--g700);color:#fff;border:none}
-.mbtn-pri:hover{background:var(--g800)}
-.mbtn-sec{background:none;border:0.5px solid var(--border2);color:var(--text)}
-.mbtn-sec:hover{background:var(--bg)}
-.steps{
-  background:var(--bg);border-radius:var(--r8);padding:13px 15px;
-  margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.8;
-}
-.steps b{color:var(--text);font-weight:600}
-.steps ol{padding-left:16px}
-.steps a{color:var(--g700)}
-
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:24px;right:24px;
-  background:var(--g800);color:#fff;
-  padding:10px 18px;border-radius:var(--r8);
-  font-size:13px;opacity:0;transform:translateY(6px);
-  transition:opacity .2s,transform .2s;pointer-events:none;z-index:999;
-}
-.toast.on{opacity:1;transform:translateY(0)}
 
 /* ── UTIL ── */
 .hidden{display:none!important}
@@ -265,11 +215,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);fon
     </div>
   </div>
   <div class="topbar-right">
-    <div style="display:flex;align-items:center;gap:6px">
-      <div class="sync-dot off" id="syncDot"></div>
-      <span class="sync-label" id="syncLabel">ไม่ได้เชื่อมต่อ</span>
-    </div>
-    <button class="btn-db" onclick="openModal()">🔗 Firebase</button>
   </div>
 </header>
 
@@ -289,41 +234,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);fon
   </button>
 </nav>
 
-<!-- TOAST -->
-<div class="toast" id="toast">✓ บันทึกแล้ว</div>
-
-<!-- FIREBASE MODAL -->
-<div class="modal-mask hidden" id="modalMask">
-  <div class="modal">
-    <h2>🔗 เชื่อมต่อ Firebase Realtime DB</h2>
-    <p>วาง Database URL เพื่อให้ทุกคนในทีมแก้ไขและเห็นการเปลี่ยนแปลงพร้อมกัน</p>
-    <input type="text" id="fbUrl" placeholder="https://your-project-default-rtdb.firebaseio.com">
-    <div class="row">
-      <button class="mbtn mbtn-sec" onclick="closeModal()">ข้ามก่อน</button>
-      <button class="mbtn mbtn-pri" onclick="doConnect()">เชื่อมต่อ</button>
-    </div>
-    <div class="steps">
-      <b>สร้าง Firebase ฟรี (2 นาที):</b>
-      <ol>
-        <li>ไปที่ <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a></li>
-        <li>สร้าง Project → เปิด <b>Realtime Database</b> → Start in <b>test mode</b></li>
-        <li>คัดลอก URL <code>https://xxx-rtdb.firebaseio.com</code> มาวางด้านบน</li>
-        <li>แชร์ไฟล์ HTML ให้ทีม ทุกคนวาง URL เดิม → sync อัตโนมัติ</li>
-      </ol>
-    </div>
-  </div>
-</div>
 
 <!-- ══════════════════════════════ CONTENT ══════════════════════════════ -->
 <div class="wrap">
 
   <!-- ▌ OVERVIEW -->
   <div class="panel on" id="p-overview">
-
-    <div class="notice">
-      <span>✏️</span>
-      <span><b>แก้ไขได้เลย:</b> คลิกที่ข้อความใดก็ได้ — เชื่อมต่อ Firebase แล้วจะ sync ทันทีให้ทุกคน</span>
-    </div>
 
     <div class="sec">สัดส่วนการทำงาน</div>
     <div class="ratio-grid" id="ratioGrid"></div>
@@ -517,61 +433,6 @@ const D = {
   }
 };
 
-/* ══════════════════════ FIREBASE ══════════════════════ */
-let db=null,ref=null,saveTimer=null,connected=false;
-
-function openModal(){
-  document.getElementById('modalMask').classList.remove('hidden');
-  const saved=localStorage.getItem('gem-fb-url');
-  if(saved) document.getElementById('fbUrl').value=saved;
-}
-function closeModal(){document.getElementById('modalMask').classList.add('hidden')}
-function doConnect(){
-  const url=document.getElementById('fbUrl').value.trim();
-  if(!url){alert('กรุณาใส่ Firebase URL');return}
-  localStorage.setItem('gem-fb-url',url);
-  closeModal();
-  bootFirebase(url);
-}
-function bootFirebase(url){
-  try{
-    const apps=firebase.apps;
-    const app=apps.length?firebase.app():firebase.initializeApp({databaseURL:url});
-    db=firebase.database(app);
-    ref=db.ref('gemlogin-v1');
-    ref.on('value',snap=>{
-      const v=snap.val();
-      if(v){merge(v)}
-      renderAll();
-      setSync(true);
-    },()=>setSync(false));
-  }catch(e){alert('เชื่อมต่อไม่ได้: '+e.message)}
-}
-function merge(v){
-  if(v.members) D.members.forEach((m,i)=>{if(v.members[m.id]) Object.assign(m,v.members[m.id])});
-  if(v.owners) D.owners=v.owners;
-  if(v.schedules) Object.keys(v.schedules).forEach(k=>{if(D.schedules[k]) D.schedules[k]=v.schedules[k]});
-}
-function save(){
-  if(!ref) return;
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{
-    const payload={members:{},owners:D.owners,schedules:D.schedules};
-    D.members.forEach(m=>payload.members[m.id]={name:m.name,pos:m.pos,main:m.main,other:m.other,brief:m.brief,kpi:m.kpi,duties:m.duties});
-    ref.set(payload).then(toast);
-  },700);
-}
-function setSync(on){
-  connected=on;
-  const dot=document.getElementById('syncDot');
-  dot.className='sync-dot '+(on?'on':'off');
-  document.getElementById('syncLabel').textContent=on?'Real-time sync':'ไม่ได้เชื่อมต่อ';
-}
-function toast(){
-  const t=document.getElementById('toast');
-  t.classList.add('on');
-  setTimeout(()=>t.classList.remove('on'),1500);
-}
 
 /* ══════════════════════ TAB ══════════════════════ */
 const panels={overview:'p-overview',duties:'p-duties',schedule:'p-schedule',owners:'p-owners'};
@@ -583,12 +444,6 @@ function go(id,btn){
 }
 
 /* ══════════════════════ RENDER ══════════════════════ */
-function editable(el,cb){
-  el.contentEditable='true';
-  el.addEventListener('blur',()=>{cb(el.innerText.trim());save()});
-  el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();el.blur()}});
-}
-
 function renderAll(){
   renderRatio();renderOv();renderPerson();renderSched();renderOwners();
 }
@@ -600,12 +455,11 @@ function renderRatio(){
     const d=document.createElement('div');d.className='rc';
     d.innerHTML=`<div class="rc-top">
       <div class="av ${m.cls}">${m.av}</div>
-      <div><div class="rc-name" contenteditable="true">${m.name}</div>
+      <div><div class="rc-name">${m.name}</div>
       <div class="rc-pos">${m.pos}</div></div></div>
       <div class="bar-wrap"><div class="bar-fill" style="width:${m.main}%"></div></div>
       <div class="bar-nums"><span>งานหลัก <b>${m.main}%</b></span><span>อื่น <b>${m.other}%</b></span></div>`;
     g.appendChild(d);
-    editable(d.querySelector('[contenteditable]'),v=>{m.name=v});
   });
 }
 
@@ -614,14 +468,11 @@ function renderOv(){
   const tb=document.getElementById('ovTbody');tb.innerHTML='';
   D.members.forEach(m=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span contenteditable="true">${m.name}</span></td>
-      <td><span contenteditable="true">${m.pos}</span></td>
-      <td><span contenteditable="true">${m.brief}</span></td>
-      <td><span contenteditable="true">${m.kpi}</span><br><span class="kpi-chip">KPI</span></td>`;
+    tr.innerHTML=`<td><span>${m.name}</span></td>
+      <td><span>${m.pos}</span></td>
+      <td><span>${m.brief}</span></td>
+      <td><span>${m.kpi}</span><br><span class="kpi-chip">KPI</span></td>`;
     tb.appendChild(tr);
-    const cells=tr.querySelectorAll('[contenteditable]');
-    const keys=['name','pos','brief','kpi'];
-    cells.forEach((el,i)=>editable(el,v=>{m[keys[i]]=v}));
   });
 }
 
@@ -635,13 +486,9 @@ function renderPerson(){
       <div><div class="pc-name">${m.name}</div><div class="pc-role">${m.pos}</div></div>
     </div>
     <div class="pc-body"><ul class="duty-list">
-      ${m.duties.map((d,i)=>`<li><span contenteditable="true" data-i="${i}">${d}</span></li>`).join('')}
+      ${m.duties.map(d=>`<li><span>${d}</span></li>`).join('')}
     </ul></div>`;
     g.appendChild(d);
-    d.querySelectorAll('[data-i]').forEach(el=>{
-      const i=+el.getAttribute('data-i');
-      editable(el,v=>{m.duties[i]=v});
-    });
   });
 }
 
@@ -656,7 +503,7 @@ function renderSched(){
         <div class="tl-time">${r.t}</div>
         <div class="tl-cell">
           <span class="chip ${r.chip}">${r.label}</span>
-          <span contenteditable="true" data-si="${i}">${r.task}</span>
+          <span>${r.task}</span>
         </div>
       </div>`).join('');
     wrap.innerHTML=`<div class="sched-head">
@@ -666,10 +513,6 @@ function renderSched(){
     </div>
     <div class="timeline">${rows}</div>`;
     g.appendChild(wrap);
-    wrap.querySelectorAll('[data-si]').forEach(el=>{
-      const i=+el.getAttribute('data-si');
-      editable(el,v=>{D.schedules[m.id][i].task=v});
-    });
   });
 }
 
@@ -678,17 +521,14 @@ function renderOwners(){
   const g=document.getElementById('ownRows');g.innerHTML='';
   D.owners.forEach((row,i)=>{
     const d=document.createElement('div');d.className='own-row';
-    d.innerHTML=`<div class="own-cell"><span contenteditable="true">${row.task}</span></div>
+    d.innerHTML=`<div class="own-cell"><span>${row.task}</span></div>
       <div class="own-cell">${row.owners.map(o=>`<span class="pill">${o}</span>`).join('')}</div>`;
     g.appendChild(d);
-    editable(d.querySelector('[contenteditable]'),v=>{D.owners[i].task=v});
   });
 }
 
 /* ══════════════════════ INIT ══════════════════════ */
 renderAll();
-const savedUrl=localStorage.getItem('gem-fb-url');
-if(savedUrl) bootFirebase(savedUrl);
 </script>
 </body>
 </html>
